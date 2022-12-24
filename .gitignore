@@ -52,5 +52,9 @@ Mkfile.old
 dkms.conf
 .ccls-cache
 
+# shake
 _build 
 _shake
+
+# Nix
+result
