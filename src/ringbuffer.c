@@ -4,11 +4,16 @@
 #include <math.h>
 #include <ringbuffer.h>
 
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 static inline ssize_t get_next_index(struct shared_buffer_t *buf) {
   return 0;
 }
 
-unsigned int gcd(unsigned int u, unsigned int v) {
+static unsigned int gcd(unsigned int u, unsigned int v) {
   int shift;
   if (u == 0)
     return v;
@@ -27,7 +32,7 @@ unsigned int gcd(unsigned int u, unsigned int v) {
   return u << shift;
 }
 
-inline unsigned int lcm(unsigned int u, unsigned int v) {
+static inline unsigned int lcm(unsigned int u, unsigned int v) {
   if(u > v) {
     return (u/gcd(u,v))*v;
   }else {

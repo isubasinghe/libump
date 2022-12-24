@@ -1,2 +1,4 @@
-gcc
--I.
+gcc 
+%c -std=c11
+%c -Wall
+-Iinclude
