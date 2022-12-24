@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <libump.h>
+#include <string.h>
+#include <math.h>
+#include <ringbuffer.h>
 
 static inline ssize_t get_next_index(struct shared_buffer_t *buf) {
   return 0;
@@ -33,16 +35,29 @@ inline unsigned int lcm(unsigned int u, unsigned int v) {
   }
 }
 
-struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, int mode) {
+struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum shared_buffer_mode mode) {
   long cache_sz = sysconf(_SC_LEVEL1_DCACHE_SIZE);
   if(cache_sz < 0 || cache_sz != CACHE_LINE_SZ) {
     return NULL;
   }
+  char *name_buffer = calloc(strlen(name)+MAX(strlen(BUFFER_READ_STRING),strlen(BUFFER_WRITE_STRING)), sizeof(char));
+  switch (mode) {
+    case BUFFER_WRITE_MODE:
+      sprintf(name_buffer, "%s%s", name, BUFFER_WRITE_STRING);
+      break;
+    case BUFFER_READ_MODE:
+      sprintf(name_buffer, "%s%s", name, BUFFER_READ_STRING);
+      break;
+    default:
+      return NULL;
+  }
 
-  int fd_shm = shm_open(name, O_RDWR, S_IRUSR | S_IREAD | S_IWRITE);
+  int fd_shm = shm_open(name_buffer, O_RDWR, S_IRUSR | S_IREAD | S_IWRITE);
   if(fd_shm < 0) {
     return NULL;
   }
+
+
   unsigned int page_sz = getpagesize();
   int remer = lcm(page_sz, sizeof(SLOT_TYPE));
   
@@ -56,11 +71,35 @@ struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, int 
 
   void *internal_buffer = mmap(NULL, buffer_sz, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, fd_shm, 0);
   if(internal_buffer == NULL) {
-    shm_unlink(name);
+    shm_unlink(name_buffer);
   }
  
   struct shared_buffer_t *buf = calloc(1, sizeof(struct shared_buffer_t));
   buf->__cache_sz = cache_sz;
   buf->__buffer = internal_buffer;
+  buf->read_cursor = 0;
+  buf->write_cursor = 0;
+  buf->name = name_buffer;
+  buf->mode = mode;
 }
+
+char *read_msg(struct shared_buffer_t *buf) {
+  if(buf->mode != READ_MODE) {
+    return NULL;
+  }
+  ssize_t index = get_next_index(buf);
+  while(1) {
+    
+  }
+  return NULL; 
+}
+
+
+void free_shared_buffer(struct shared_buffer_t *buf) {
+  free(buf->name);
+  free(buf);
+}
+
+
+
 
