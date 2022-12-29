@@ -47,9 +47,9 @@ struct shared_buffer_t {
 
 struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum shared_buffer_mode mode);
 
-inline char *try_read_line(struct shared_buffer_t *buf);
+char *try_read_line(struct shared_buffer_t *buf);
 
-inline size_t try_write_line(struct shared_buffer_t *buf, char *data);
+size_t try_write_line(struct shared_buffer_t *buf, char *data);
 
 
 void free_shared_buffer(struct shared_buffer_t *buf);
