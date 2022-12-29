@@ -13,7 +13,7 @@ struct ipc_chan_t {
   struct shared_buffer_t *read_buf;
 };
 
-struct ipc_chan_t create_chan(char *name);
+struct ipc_chan_t *create_chan(char *name);
 
 int ipc_send_msg(struct ipc_chan_t *buf,char *msg, size_t msglen);
 
