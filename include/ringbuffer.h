@@ -51,6 +51,9 @@ char *try_read_line(struct shared_buffer_t *buf);
 
 size_t try_write_line(struct shared_buffer_t *buf, char *data);
 
+char *try_read_msg(struct shared_buffer_t *buf, size_t *datalen);
+size_t try_write_msg(struct shared_buffer_t *buf, char *data, size_t datalen);
+
 
 void free_shared_buffer(struct shared_buffer_t *buf);
 

@@ -101,6 +101,14 @@ inline size_t try_write_line(struct shared_buffer_t *buf, char *data) {
   return 0;
 }
 
+char *try_read_msg(struct shared_buffer_t *buf, size_t *datalen) {
+  return NULL;
+}
+
+size_t try_write_msg(struct shared_buffer_t *buf, char *data, size_t datalen) {
+  return 0;
+}
+
 
 
 void free_shared_buffer(struct shared_buffer_t *buf) {
