@@ -40,12 +40,16 @@ struct shared_buffer_t {
   char *name;
   ssize_t read_cursor;
   ssize_t write_cursor;
+  // buffer to hold read items
+  char read_buf[CACHE_LINE_SZ];
   enum shared_buffer_mode mode;
 };
 
 struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum shared_buffer_mode mode);
 
-char *read_msg(struct shared_buffer_t *buf);
+inline char *try_read_line(struct shared_buffer_t *buf);
+
+inline size_t try_write_line(struct shared_buffer_t *buf, char *data);
 
 
 void free_shared_buffer(struct shared_buffer_t *buf);

@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
+
 #include <ringbuffer.h>
 
 #include <unistd.h>
@@ -86,18 +88,19 @@ struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum
   buf->write_cursor = 0;
   buf->name = name_buffer;
   buf->mode = mode;
+  memset(buf->read_buf, 0, CACHE_LINE_SZ);
 }
 
-char *read_msg(struct shared_buffer_t *buf) {
-  if(buf->mode != READ_MODE) {
-    return NULL;
-  }
-  ssize_t index = get_next_index(buf);
-  while(1) {
-    
-  }
-  return NULL; 
+inline char *try_read_line(struct shared_buffer_t *buf) {
+  assert(buf->mode == READ_MODE);
+  return NULL;
 }
+
+inline size_t try_write_line(struct shared_buffer_t *buf, char *data) {
+  assert(buf->mode == WRITE_MODE);
+  return 0;
+}
+
 
 
 void free_shared_buffer(struct shared_buffer_t *buf) {
