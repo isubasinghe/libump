@@ -27,12 +27,12 @@ main = shakeArgs shakeOptions {shakeFiles = "_build"} $ do
   "_build/bin//*" %> \out -> do
     need ["_build/lib/libump.a"]
     let c = dropDirectory1 (dropDirectory1 out) <.> "c"
-    cmd_ "gcc -O3" [c] "-o" [out] "-I./include -L./_build/lib -lump"
+    cmd_ "gcc -g" [c] "-o" [out] "-I./include -L./_build/lib -lump"
 
   "_build//*.o" %> \out -> do
     let c = dropDirectory1 $ out -<.> "c"
     let m = out -<.> "m"
-    cmd_ "gcc -O3 -I./include -c" [c] "-o" [out] "-MMD -MF" [m]
+    cmd_ "gcc -g -I./include -c" [c] "-o" [out] "-MMD -MF" [m]
     neededMakefileDependencies m
 
   "_build/include//*.h" %> \out -> do

@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
 
 static inline ssize_t get_next_index(struct shared_buffer_t *buf) {
@@ -45,22 +46,17 @@ static inline unsigned int lcm(unsigned int u, unsigned int v) {
 struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum shared_buffer_mode mode) {
   long cache_sz = sysconf(_SC_LEVEL1_DCACHE_SIZE);
   if(cache_sz < 0 || cache_sz != CACHE_LINE_SZ) {
+    printf("CACHE LINE SIZE %ld\n", cache_sz);
+    perror("GOT INVALID CACHE LINE SIZE\n");
     return NULL;
   }
   char *name_buffer = calloc(strlen(name)+MAX(strlen(BUFFER_READ_STRING),strlen(BUFFER_WRITE_STRING)), sizeof(char));
-  switch (mode) {
-    case BUFFER_WRITE_MODE:
-      sprintf(name_buffer, "%s%s", name, BUFFER_WRITE_STRING);
-      break;
-    case BUFFER_READ_MODE:
-      sprintf(name_buffer, "%s%s", name, BUFFER_READ_STRING);
-      break;
-    default:
-      return NULL;
-  }
-
-  int fd_shm = shm_open(name_buffer, O_RDWR, S_IRUSR | S_IREAD | S_IWRITE);
+  strcpy(name_buffer, name);
+  
+  printf("TRYING TO OPEN %s\n", name_buffer);
+  int fd_shm = shm_open(name_buffer, O_CREAT | O_RDWR, 0600);
   if(fd_shm < 0) {
+    perror("unable to open\n");
     return NULL;
   }
 
@@ -73,6 +69,7 @@ struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum
   buffer_sz += rem;
 
   if(ftruncate(fd_shm, buffer_sz) < 0) {
+    perror("unable to truncate\n");
     return NULL;
   }
 
@@ -89,6 +86,7 @@ struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum
   buf->name = name_buffer;
   buf->mode = mode;
   memset(buf->read_buf, 0, CACHE_LINE_SZ);
+  return buf;
 }
 
 inline char *try_read_line(struct shared_buffer_t *buf) {

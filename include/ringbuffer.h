@@ -4,7 +4,7 @@
 #endif
 
 #define SLOT_TYPE uint64_t
-#define CACHE_LINE_SZ 64
+#define CACHE_LINE_SZ 32768
 
 #include <stdio.h>
 #include <stdlib.h>
