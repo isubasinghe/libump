@@ -9,7 +9,7 @@ pkgs.stdenv.mkDerivation {
 
   nativeBuildInputs = [];
 
-  buildInputs = [pkgs.gcc (pkgs.haskellPackages.ghcWithPackages (ps: [ ps.shake ]))];
+  buildInputs = [pkgs.gcc pkgs.valgrind (pkgs.haskellPackages.ghcWithPackages (ps: [ ps.shake ]))];
 
   buildPhase = '' 
     ./build.sh  

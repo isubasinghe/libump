@@ -91,6 +91,15 @@ struct shared_buffer_t *create_shared_buffer(char *name, ssize_t buffer_sz, enum
 
 inline char *try_read_line(struct shared_buffer_t *buf) {
   assert(buf->mode == READ_MODE);
+  buffer_data d;
+  for(int i; i < MAX_OPTIMAL_LOOP; i++) {
+    d = buf->__buffer[buf->read_cursor];
+    if(unlikely(d.read_data.buffer_state == READY)) {
+      goto ready;
+    }
+  }
+  return NULL;
+ready:
   return NULL;
 }
 

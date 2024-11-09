@@ -6,6 +6,11 @@
 #define SLOT_TYPE uint64_t
 #define CACHE_LINE_SZ 32768
 
+#define MAX_OPTIMAL_LOOP 1000
+
+#define LOOP_SIZE 512
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -34,9 +39,25 @@ enum shared_buffer_mode {
   WRITE_MODE,
 };
 
+enum buffer_state {
+  WAITING = 0,
+  READY = 1,
+  CONTINUE =2,
+};
+
+typedef struct {
+  unsigned char buffer_state: 32;
+  uint32_t length: 32;
+} read_buffer_data;
+
+typedef union {
+  read_buffer_data read_data;
+  uint64_t raw_data;
+} buffer_data;
+
 struct shared_buffer_t {
   uint64_t __cache_sz; 
-  void *__buffer;
+  buffer_data *__buffer;
   char *name;
   ssize_t read_cursor;
   ssize_t write_cursor;
